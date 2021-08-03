@@ -25,6 +25,10 @@ app.all('/oauth/token', obtainToken);
 app.get('/', function(req, res) {
 	res.send('Congratulations!');
 });
+
+app.get('/authorize', function(req, res) {
+	res.send('authorize!');
+});
 app.get('/secret', authenticateRequest, function(req, res) {
 
 	res.send('Congratulations, you are in a secret area!');
