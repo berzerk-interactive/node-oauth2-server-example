@@ -77,3 +77,17 @@ function authenticateRequest(req, res, next) {
 			res.status(err.code || 500).json(err);
 		});
 }
+
+function createAuthorizationCode(req, res, next){
+	var request = new Request(req);
+	var response = new Response(res);
+
+	return app.oauth.token(request, response)
+		.then(function (token) {
+
+			res.json(token);
+		}).catch(function (err) {
+
+			res.status(err.code || 500).json(err);
+		});
+}

@@ -9,7 +9,8 @@ var config = {
 		clientSecret: 'secret',
 		grants: [
 			'password',
-			'refresh_token'
+			'refresh_token',
+			'authorization_code'
 		],
 		redirectUris: []
 	}],
@@ -23,6 +24,7 @@ var config = {
 		redirectUris: []
 	}],
 	tokens: [],
+	codes: ['g0ZGZmNjVmOWIjNTk2NTk4ZTYyZGI3'],
 	users: [{
 		username: 'pedroetb',
 		password: 'password'
@@ -38,6 +40,7 @@ var dump = function() {
 	console.log('clients', config.clients);
 	console.log('confidentialClients', config.confidentialClients);
 	console.log('tokens', config.tokens);
+	console.log('tokens', config.codes);
 	console.log('users', config.users);
 };
 
@@ -146,6 +149,54 @@ var revokeToken = function(token) {
 	return !revokedTokensFound.length;
 };
 
+/*
+ * Method used only by authorization_code grant type.
+ */
+
+var getAuthorizationCode = function (code) {
+
+	var codes = config.codes.filter(function (savedCode) {
+		return savedCode === code;
+	});
+
+	if (!codes) {
+		return;
+	}
+
+	// return codes[0];
+	return {
+		code: code.authorization_code,
+		expiresAt: code.expires_at,
+		redirectUri: code.redirect_uri,
+		scope: code.scope,
+		client: client, // with 'id' property
+		user: user
+	};
+	// imaginary DB queries
+	// db.queryAuthorizationCode({ authorization_code: authorizationCode })
+	// 	.then(function (code) {
+	// 		return Promise.all([
+	// 			code,
+	// 			db.queryClient({ id: code.client_id }),
+	// 			db.queryUser({ id: code.user_id })
+	// 		]);
+	// 	})
+	// 	.spread(function (code, client, user) {
+	// 		return {
+	// 			code: code.authorization_code,
+	// 			expiresAt: code.expires_at,
+	// 			redirectUri: code.redirect_uri,
+	// 			scope: code.scope,
+	// 			client: client, // with 'id' property
+	// 			user: user
+	// 		};
+	// 	});
+
+};
+
+var revokeAuthorizationCode = function(code, callback) {
+	
+}
 /**
  * Export model definition object.
  */
@@ -157,5 +208,7 @@ module.exports = {
 	getUser: getUser,
 	getUserFromClient: getUserFromClient,
 	getRefreshToken: getRefreshToken,
-	revokeToken: revokeToken
+	revokeToken: revokeToken,
+	getAuthorizationCode: getAuthorizationCode,
+	revokeAuthorizationCode: revokeAuthorizationCode,
 };
